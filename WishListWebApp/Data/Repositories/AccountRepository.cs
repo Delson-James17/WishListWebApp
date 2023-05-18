@@ -24,7 +24,7 @@ namespace WishListWebApp.Repository
             _httpClient = new HttpClient(httpClientHandler);
 
             _configs = configs;
-            _httpClient.BaseAddress = new Uri("https://localhost:7066");
+            _httpClient.BaseAddress = new Uri("http://localhost:5211/api");
         }
 
         public async Task<string> SignInUserAsync(LoginUserViewModel loginUserViewModel)
@@ -32,8 +32,8 @@ namespace WishListWebApp.Repository
             // Add this code before making the request
             System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
 
-            var newTodoAsString = JsonConvert.SerializeObject(loginUserViewModel);
-            var requestBody = new StringContent(newTodoAsString, Encoding.UTF8, "application/json");
+            var newWishAsString = JsonConvert.SerializeObject(loginUserViewModel);
+            var requestBody = new StringContent(newWishAsString, Encoding.UTF8, "application/json");
             _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
             var response = await _httpClient.PostAsync("/Login", requestBody);
             if (response.IsSuccessStatusCode)

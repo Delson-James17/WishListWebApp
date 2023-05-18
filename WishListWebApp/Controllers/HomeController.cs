@@ -19,9 +19,17 @@ namespace WishListWebApp.Controllers
 
         public async Task<IActionResult> Index()
         {
+          var token = HttpContext.Session.GetString("JWToken");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                // Handle the case when the token is not available
+                return RedirectToAction("Login", "Account");
+            }
             var viewModel = new IndexViewModel
             {
-                Wishlists = await _wishlistRepository.GetAllWishlist()
+
+                Wishlists = await _wishlistRepository.GetAllWishlist(token)
             };
 
             return View(viewModel);
@@ -32,12 +40,13 @@ namespace WishListWebApp.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create(Wishlist newWishlist)
+        public async Task<IActionResult> Create(WishlistViewModel newWishlist)
         {
-            newWishlist.Id = 1;
-            newWishlist.IsCompleted = false;
+            var token = HttpContext.Session.GetString("JWToken");
+            //newWishlist.Id = 1;
+            newWishlist.IsCompleted = "true";
 
-            await _wishlistRepository.CreateWishlist(newWishlist);
+            await _wishlistRepository.CreateWishlist(newWishlist, token);
 
             return RedirectToAction("Index");
         }

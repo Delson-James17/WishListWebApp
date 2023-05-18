@@ -1,6 +1,7 @@
 ﻿using WishListWebApp.Repository;
 using Microsoft.AspNetCore.Mvc;
 using WishListWebApp.ViewModels;
+using Newtonsoft.Json.Linq;
 
 namespace WishListWebApp.Controllers
 {
@@ -48,13 +49,17 @@ namespace WishListWebApp.Controllers
             {
                 // login activity -> cookie [Roles and Claims]
                 var result = await _repo.SignInUserAsync(userViewModel);
+               // result = result.Replace("{\"token\":\"", "").Replace("\"}", "");
                 //login cookie and transfter to the client 
                 if (result is not null)
                 {
                     // add token to session 
                     HttpContext.Session.SetString("JWToken", result);
-                   
-                    return RedirectToAction("GetAllContacts", "Contact");
+                    string ApiKey = "RANDomValuetoDenoteAPIKeyWithNumbers131235";
+                    HttpContext.Session.SetString("ApiKey", ApiKey);
+                    HttpContext.Session.SetString("Username", userViewModel.UserName);
+
+                    return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError(string.Empty, "Invalid Login Credentials");
             }
