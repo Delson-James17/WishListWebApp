@@ -1,6 +1,8 @@
-﻿namespace WishListWebApp.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace WishListWebApp.Models
 {
-    public class ApplicationUser
+    public class ApplicationUser : IdentityUser
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
