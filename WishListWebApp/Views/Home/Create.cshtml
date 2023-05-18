@@ -1,0 +1,17 @@
+﻿@model Wishlist
+
+<form asp-controller="Home" asp-action="Create" method="POST">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" type="text" class="form-control mt-2">
+    </div>
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <input asp-for="Description" type="text" class="form-control mt-2">
+    </div>
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" type="text" class="form-control mt-2">
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+</form>

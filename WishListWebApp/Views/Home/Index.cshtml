@@ -1,0 +1,34 @@
+﻿@model WishListWebApp.ViewModels.IndexViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div>
+    <div class="d-flex align-items-center">
+        <h1 class="display-4 mb-3">Wish List</h1>
+        <a asp-controller="Home" asp-action="Create" class="btn btn-primary ms-3" type="button">Create New Wishlist</a>
+    </div>
+
+    @foreach (var wish in Model.Wishlists)
+    {
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <div class="input-group-text w-100 h-100">
+                    <input type="checkbox" value="@wish.IsCompleted" aria-label="Checkbox for following text input">
+                </div>
+            </div>
+            <input type="text" class="form-control" value="@wish.Name" aria-label="Text input with checkbox" readonly>
+            <input type="text" class="form-control" value="@wish.Description" aria-label="Text input with checkbox" readonly>
+            <input type="text" class="form-control" value="@wish.Price" aria-label="Text input with checkbox" readonly>
+            <div class="input-group-prepend">
+                <a asp-controller="Home" asp-action="Edit" asp-route-wishId="@wish.Id" class="btn btn-outline-warning"
+                    type="button">Edit</a>
+            </div>
+            <div class="input-group-prepend">
+                <a asp-controller="Home" asp-action="Delete" asp-route-wishId="@wish.Id" class="btn btn-outline-danger"
+                    type="button">Delete</a>
+            </div>
+        </div>
+    }
+</div>
