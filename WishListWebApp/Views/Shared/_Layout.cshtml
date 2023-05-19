@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var token = HttpContextAccessor.HttpContext?.Session.GetString("JWToken");
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -25,17 +30,24 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
-                             <a class="nav-link text-black" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
-                         </li>
+                          </ul>
+                    <ul class="nav navbar-nav my-2 my-lg-0">
+                        @if (string.IsNullOrEmpty(token))
+                        {
                             <li class="nav-item">
-                             <a class="nav-link text-black" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-                                        </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-black" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
-                                    </li>
-                                
-                            </ul>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>

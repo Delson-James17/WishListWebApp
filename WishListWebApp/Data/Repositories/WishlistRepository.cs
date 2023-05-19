@@ -51,15 +51,21 @@ namespace WishListWebApp.Data.Repositories
             return null;
         }
 
-        public async Task DeleteWishList(int wishid)
+        public async Task DeleteWishList(int wishid, string token)
         {
-            var response = await _httpClient.DeleteAsync($"/wishlist/{wishid}");
-            if (response.IsSuccessStatusCode)
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            ///WishList?Id=1
+            var response = await _httpClient.DeleteAsync(_baseURL+"/Wishlist/?Id="+wishid);
+            if (!response.IsSuccessStatusCode)
             {
-                var data = await response.Content.ReadAsByteArrayAsync();
-                Console.WriteLine("Delete Wishlist Response: ", data);
+                throw new Exception("Failed to delete wishlist item. Error: " + response.StatusCode);
+        
+
             }
         }
+
 
         public async Task<List<Wishlist>> GetAllWishlist(string token)
         {
@@ -79,10 +85,12 @@ namespace WishListWebApp.Data.Repositories
                 return null;
             }
         }
-
-        public async Task<Wishlist> GetWishlistById(int wishid)
+        public async Task<Wishlist> GetWishlistById(int wishid, string token)
         {
-            var response = await _httpClient.GetAsync($"/wishlist/{wishid}");
+            _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
+            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+            var response = await _httpClient.GetAsync($"{_baseURL}/Wishlist/{wishid}");
+
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -93,19 +101,30 @@ namespace WishListWebApp.Data.Repositories
             return null;
         }
 
-        public async Task<Wishlist?> UpdateWishlist(int wishid, Wishlist newwishlist)
+        public async Task<Wishlist> UpdateWishlist(int wishid, Wishlist newwishlist, string token)
         {
-            var newWishlistAsString = JsonConvert.SerializeObject(newwishlist);
-            var responseBody = new StringContent(newWishlistAsString, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"/wishlist/{wishid}", responseBody);
+                _httpClient.DefaultRequestHeaders.Add("ApiKey", _configs.GetValue<string>("ApiKey"));
+                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                    string data = JsonConvert.SerializeObject(newwishlist);
+                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+            //?id={0}&name={1}&description={2}&price={3}&iscompleted={4}
+            string fullURL = _baseURL + "/Wishlist/?id=" + newwishlist.Id + "&name=" + newwishlist.Name + "&description=" + newwishlist.Description + "&price=" + newwishlist.Price + "&iscompleted=" + newwishlist.IsCompleted;
+         var response = await _httpClient.PutAsync(fullURL, content);
+
             if (response.IsSuccessStatusCode)
             {
-                var content = await response.Content.ReadAsStringAsync();
-                var wishlist = JsonConvert.DeserializeObject<Wishlist>(content);
-                return wishlist;
+               /* var responseContent = await response.Content.ReadAsStringAsync();
+                var updatedWishlist = JsonConvert.DeserializeObject<Wishlist>(responseContent);*/
+                return newwishlist;
             }
-
-            return null;
+            else
+              {
+        // Handle unsuccessful response here
+               // You can throw an exception or return null/other value as per your requirement
+                return null;
         }
+        }
+
     }
 }

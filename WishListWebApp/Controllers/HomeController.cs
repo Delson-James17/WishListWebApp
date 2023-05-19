@@ -51,30 +51,60 @@ namespace WishListWebApp.Controllers
             return RedirectToAction("Index");
         }
         [HttpGet]
-        public async Task<IActionResult> Edit(int wishId)
+        public async Task<IActionResult>Edit(int id)
         {
-            var wish = await _wishlistRepository.GetWishlistById(wishId);
-
-            if (wish is null)
+            var token = HttpContext.Session.GetString("JWToken");
+            var wishlist = await _wishlistRepository.GetWishlistById(id, token);
+            if (wishlist == null)
                 return NotFound();
 
-            return View(wish);
+            return View(wishlist);
         }
         [HttpPost]
-        public async Task<IActionResult>Edit(Wishlist updatewishlist)
+        public async Task<IActionResult> Edit(int id, Wishlist updatedWishlist)
         {
-            var test = await _wishlistRepository.UpdateWishlist(updatewishlist.Id, updatewishlist);
+            var token = HttpContext.Session.GetString("JWToken");
+            if (id != updatedWishlist.Id)
+                return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                var modifiedWishlist = await _wishlistRepository.UpdateWishlist(id, updatedWishlist, token);
+                if (modifiedWishlist != null)
+                {
+                    if (modifiedWishlist.IsCompleted == "true")
+                    {
+                        return RedirectToAction(nameof(Index), new { id = modifiedWishlist.Id, token });
+                    }
+                    else
+                    {
+                        // Handle the case where the update was not successful
+                        // You can display an error message or perform other actions as per your requirement
+                        ViewBag.ErrorMessage = "Failed to update the wishlist.";
+                        return View(updatedWishlist);
+                    }
+                }
+                else
+                {
+                    // Handle the case where the update operation returned null
+                    // You can display an error message or perform other actions as per your requirement
+                    ViewBag.ErrorMessage = "Failed to update the wishlist.";
+                    return View(updatedWishlist);
+                }
+            }
+
+            return View(updatedWishlist);
+        }
+
+
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var token = HttpContext.Session.GetString("JWToken");
+            await _wishlistRepository.DeleteWishList(id, token);
             return RedirectToAction("Index");
         }
-        public async Task<IActionResult> Delete(int wishId)
-        {
-            await _wishlistRepository.DeleteWishList(wishId);
-            return RedirectToAction("Index");
-        }
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+    
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

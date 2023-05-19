@@ -22,11 +22,11 @@
             <input type="text" class="form-control" value="@wish.Description" aria-label="Text input with checkbox" readonly>
             <input type="text" class="form-control" value="@wish.Price" aria-label="Text input with checkbox" readonly>
             <div class="input-group-prepend">
-                <a asp-controller="Home" asp-action="Edit" asp-route-wishId="@wish.Id" class="btn btn-outline-warning"
+                <a asp-controller="Home" asp-action="Edit" asp-route-id="@wish.Id" class="btn btn-outline-warning"
                     type="button">Edit</a>
             </div>
             <div class="input-group-prepend">
-                <a asp-controller="Home" asp-action="Delete" asp-route-wishId="@wish.Id" class="btn btn-outline-danger"
+                <a asp-controller="Home" asp-action="Delete" asp-route-id="@wish.Id" class="btn btn-outline-danger"
                     type="button">Delete</a>
             </div>
         </div>
